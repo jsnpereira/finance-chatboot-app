@@ -1,12 +1,17 @@
 package com.finance.chatboot.service.telegram;
 
 import com.finance.chatboot.model.telegram.TelegramUpdate;
+import com.finance.chatboot.service.rabbit.ChatBootProducer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class TelegramService {
+
+    @Autowired
+    private ChatBootProducer chatBootProducer;
 
     public void processUpdate(TelegramUpdate update) {
         log.info("Processing update ID: {}", update.getUpdateId());
@@ -27,6 +32,8 @@ public class TelegramService {
         var userName = message.getFrom().getFirstName();
 
         log.info("Received message from {}: {}", userName, text);
+
+        chatBootProducer.sendMessage(update);
 
         // TODO: Implementar lógica de resposta
         // Por enquanto apenas logando
